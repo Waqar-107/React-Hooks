@@ -336,6 +336,66 @@ function App() {
 export default App;
 ```
 
+## useMemo
+
+```javascript
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+```
+
+> - A create function and dependency array is passed. The function is called when any of the values of the dependency array is changed. If no array is provided, a new value will be computed on every render.
+> - `useMemo` runs during rendering
+> - Add this for optimization. So better not to add at the start of the project.
+
+## useCallback
+
+When anyone of the buttons are clicked, both the function passed to them are rendered which should be optimized. Same goes for the boxes. We pass to them different state values as prop but when anyone of them changes both the boxes renders.
+
+```javascript
+import React, { useState } from 'react';
+import './App.css';
+import Box from './box';
+import MyButton from './myButton';
+
+function App() {
+	const [count, setCount] = useState(10);
+	const [count2, setCount2] = useState(5);
+
+	const inc1 = () => {
+		setCount((prev) => prev + 1);
+	};
+
+	const inc2 = () => {
+		setCount2((prev) => prev + 1);
+	};
+
+	return (
+		<div>
+			<Box text={count} num={1} />
+			<MyButton handleClick={inc1} num={1} />
+
+			<Box text={count2} num={2} />
+			<MyButton handleClick={inc2} num={2} />
+		</div>
+	);
+}
+
+export default App;
+```
+
+If we use react memo with the box components then we can avoid the re-renderings
+
+```javascript
+export default React.memo(Box);
+```
+
+For the button component, we have to use `React.memo()` as well as wrap the function with `React.useCallback()`
+
+```javascript
+const inc1 = useCallback(() => {
+	setCount((prev) => prev + 1);
+}, [count]);
+```
+
 ## useContext
 
 > - `const value = useContext(MyContext);` Accepts a context object(returned by `React.createContext`) and returns the current context value for that context.
